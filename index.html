@@ -144,27 +144,14 @@ video{
 <script>
 const video = document.getElementById('bgVideo');
 
-/* Upload Video */
+/* Upload Video (No Storage Saving) */
 function loadVideo(event){
   const file = event.target.files[0];
-  const reader = new FileReader();
-  reader.onload = function(e){
-    localStorage.setItem('savedVideo', e.target.result);
-    video.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-/* Load Saved Video */
-window.onload = function(){
-  const saved = localStorage.getItem('savedVideo');
-  if(saved){
-    video.src = saved;
+  if(file){
+    const videoURL = URL.createObjectURL(file);
+    video.src = videoURL;
   }
-  updateClock();
-  setInterval(updateClock,1000);
-  getBattery();
-};
+}
 
 /* Clock */
 function updateClock(){
@@ -183,6 +170,12 @@ function getBattery(){
   }
 }
 
+window.onload = function(){
+  updateClock();
+  setInterval(updateClock,1000);
+  getBattery();
+};
+
 /* Secret tap to show upload */
 let tapCount = 0;
 document.body.addEventListener('click', function(){
@@ -192,6 +185,5 @@ document.body.addEventListener('click', function(){
   }
 });
 </script>
-
 </body>
   </html>
