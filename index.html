@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prashant Glass OS</title>
+
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+  overflow:hidden;
+  background:black;
+  color:#111;
+}
+
+/* Background */
+video{
+  position:fixed;
+  right:0;
+  bottom:0;
+  min-width:100%;
+  min-height:100%;
+  object-fit:cover;
+  z-index:-2;
+}
+
+/* Glass */
+.glass{
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 28px;
+  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+/* Clock */
+.clock{
+  position:absolute;
+  top:40px;
+  width:100%;
+  text-align:center;
+  font-size:42px;
+  font-weight:500;
+}
+
+/* Battery */
+.battery{
+  position:absolute;
+  top:40px;
+  right:30px;
+  font-size:16px;
+}
+
+/* Search */
+.search-wrapper{
+  position:absolute;
+  top:40%;
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+.search-box{
+  width:60%;
+  padding:15px 20px;
+}
+
+.search-box input{
+  width:100%;
+  border:none;
+  background:transparent;
+  font-size:16px;
+  outline:none;
+  color:black;
+}
+
+/* Dock */
+.dock{
+  position:absolute;
+  bottom:30px;
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+.dock-inner{
+  padding:18px 30px;
+  display:flex;
+  gap:30px;
+}
+
+.dock-inner a img{
+  width:48px;
+  height:48px;
+  transition:transform 0.2s ease;
+}
+
+.dock-inner a img:hover{
+  transform:scale(1.2);
+}
+
+/* Upload hidden button */
+.upload-btn{
+  position:absolute;
+  bottom:20px;
+  right:20px;
+  opacity:0;
+}
+</style>
+</head>
+
+<body>
+
+<video id="bgVideo" autoplay muted loop playsinline></video>
+
+<div class="clock" id="clock"></div>
+<div class="battery" id="battery"></div>
+
+<div class="search-wrapper">
+  <div class="glass search-box">
+    <form action="https://www.google.com/search" method="GET">
+      <input type="text" name="q" placeholder="Search Google...">
+    </form>
+  </div>
+</div>
+
+<div class="dock">
+  <div class="glass dock-inner">
+    <a href="https://youtube.com">
+      <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png">
+    </a>
+    <a href="https://instagram.com">
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png">
+    </a>
+    <a href="https://chat.openai.com">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png">
+    </a>
+  </div>
+</div>
+
+<input type="file" accept="video/*" class="upload-btn" onchange="loadVideo(event)">
+
+<script>
+const video = document.getElementById('bgVideo');
+
+/* Upload Video */
+function loadVideo(event){
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  reader.onload = function(e){
+    localStorage.setItem('savedVideo', e.target.result);
+    video.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* Load Saved Video */
+window.onload = function(){
+  const saved = localStorage.getItem('savedVideo');
+  if(saved){
+    video.src = saved;
+  }
+  updateClock();
+  setInterval(updateClock,1000);
+  getBattery();
+};
+
+/* Clock */
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').innerHTML =
+    now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+/* Battery */
+function getBattery(){
+  if(navigator.getBattery){
+    navigator.getBattery().then(function(battery){
+      document.getElementById('battery').innerHTML =
+        "🔋 " + Math.round(battery.level * 100) + "%";
+    });
+  }
+}
+
+/* Secret tap to show upload */
+let tapCount = 0;
+document.body.addEventListener('click', function(){
+  tapCount++;
+  if(tapCount == 5){
+    document.querySelector('.upload-btn').style.opacity = 1;
+  }
+});
+</script>
+
+</body>
+  </html>
